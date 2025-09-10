@@ -1,61 +1,183 @@
-<p align="center"><a href="https://laravel.com" target="_blank"><img src="https://raw.githubusercontent.com/laravel/art/master/logo-lockup/5%20SVG/2%20CMYK/1%20Full%20Color/laravel-logolockup-cmyk-red.svg" width="400" alt="Laravel Logo"></a></p>
+# HMCTS Task Management System
 
-<p align="center">
-<a href="https://github.com/laravel/framework/actions"><img src="https://github.com/laravel/framework/workflows/tests/badge.svg" alt="Build Status"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/dt/laravel/framework" alt="Total Downloads"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/v/laravel/framework" alt="Latest Stable Version"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/l/laravel/framework" alt="License"></a>
-</p>
+A task management application built for HMCTS caseworkers to help them organise and track daily tasks. Developed in Laravel, it allows creating, viewing, updating, and deleting tasks, managing task statuses, and provides both a web interface and JSON API endpoints.
 
-## About Laravel
+## Features
 
-Laravel is a web application framework with expressive, elegant syntax. We believe development must be an enjoyable and creative experience to be truly fulfilling. Laravel takes the pain out of development by easing common tasks used in many web projects, such as:
+**Core Functionality:**
+- Complete CRUD operations for task management
+- Tasks include title, description, status, and due date
+- Task status can be pending, in progress, or done
+- Includes input validation and clear error handling
+- Responsive layout works on desktop and mobile devices
 
-- [Simple, fast routing engine](https://laravel.com/docs/routing).
-- [Powerful dependency injection container](https://laravel.com/docs/container).
-- Multiple back-ends for [session](https://laravel.com/docs/session) and [cache](https://laravel.com/docs/cache) storage.
-- Expressive, intuitive [database ORM](https://laravel.com/docs/eloquent).
-- Database agnostic [schema migrations](https://laravel.com/docs/migrations).
-- [Robust background job processing](https://laravel.com/docs/queues).
-- [Real-time event broadcasting](https://laravel.com/docs/broadcasting).
+## Requirements
 
-Laravel is accessible, powerful, and provides tools required for large, robust applications.
+The following components are required for deployment:
+- PHP 8.1 or higher
+- Composer dependency manager
+- MySQL database server
 
-## Learning Laravel
+## Setup
 
-Laravel has the most extensive and thorough [documentation](https://laravel.com/docs) and video tutorial library of all modern web application frameworks, making it a breeze to get started with the framework.
+```bash
+# Get the code
+git clone https://github.com/hmcts-task-manager/Hmcts-task-dev2025.git
+cd hmcts-tasks
 
-You may also try the [Laravel Bootcamp](https://bootcamp.laravel.com), where you will be guided through building a modern Laravel application from scratch.
+# Install dependencies
+composer install
 
-If you don't feel like reading, [Laracasts](https://laracasts.com) can help. Laracasts contains thousands of video tutorials on a range of topics including Laravel, modern PHP, unit testing, and JavaScript. Boost your skills by digging into our comprehensive video library.
+# Set up environment
+cp .env.example .env
+php artisan key:generate
 
-## Laravel Sponsors
+# Configure your database in .env file
+DB_CONNECTION=mysql
+DB_HOST=127.0.0.1
+DB_PORT=3306
+DB_DATABASE=mytasks
+DB_USERNAME=your_username
+DB_PASSWORD=your_password
 
-We would like to extend our thanks to the following sponsors for funding Laravel development. If you are interested in becoming a sponsor, please visit the [Laravel Partners program](https://partners.laravel.com).
+# Run migrations
+php artisan migrate
 
-### Premium Partners
+# Start the server
+php artisan serve
+```
 
-- **[Vehikl](https://vehikl.com)**
-- **[Tighten Co.](https://tighten.co)**
-- **[Kirschbaum Development Group](https://kirschbaumdevelopment.com)**
-- **[64 Robots](https://64robots.com)**
-- **[Curotec](https://www.curotec.com/services/technologies/laravel)**
-- **[DevSquad](https://devsquad.com/hire-laravel-developers)**
-- **[Redberry](https://redberry.international/laravel-development)**
-- **[Active Logic](https://activelogic.com)**
+The application will be accessible at `http://localhost:8000`.
 
-## Contributing
+## Testing
 
-Thank you for considering contributing to the Laravel framework! The contribution guide can be found in the [Laravel documentation](https://laravel.com/docs/contributions).
+The application includes a comprehensive test suite with both unit and feature tests covering core functionality:
 
-## Code of Conduct
+```bash
+php artisan test
+```
 
-In order to ensure that the Laravel community is welcoming to all, please review and abide by the [Code of Conduct](https://laravel.com/docs/contributions#code-of-conduct).
+**Test Coverage:**
+- Unit tests for model validation and business logic
+- Feature tests for API endpoints and user workflows
+- Task creation with validation rules
+- Task retrieval (individual and collection)
+- Status update operations
+- Task deletion functionality
+- Error handling and edge cases
 
-## Security Vulnerabilities
+Tests utilise SQLite in-memory database for optimal performance and isolation from production data.
 
-If you discover a security vulnerability within Laravel, please send an e-mail to Taylor Otwell via [taylor@laravel.com](mailto:taylor@laravel.com). All security vulnerabilities will be promptly addressed.
+## API Documentation
 
-## License
+The system provides RESTful API endpoints for integration with external systems or headless implementations:
 
-The Laravel framework is open-sourced software licensed under the [MIT license](https://opensource.org/licenses/MIT).
+**Get all tasks:**
+```http
+GET /
+Accept: application/json
+```
+
+**Response:**
+```json
+[
+  {
+    "id": 1,
+    "title": "Review case files",
+    "description": "Review pending case files for tomorrow's hearing",
+    "status": "pending",
+    "due_date": "2025-09-03T14:23:00.000000Z",
+    "created_at": "2025-09-02T09:17:42.000000Z",
+    "updated_at": "2025-09-02T11:34:18.000000Z"
+  }
+]
+```
+
+#### Get Task by ID
+```http
+GET /tasks/{id}
+Accept: application/json
+```
+
+#### Create Task
+```http
+POST /tasks
+Content-Type: application/json
+
+{
+  "title": "Task title",
+  "description": "Optional description",
+  "status": "pending",
+  "due_date": "2025-09-05 16:45:00"
+}
+```
+
+**Response:** `201 Created`
+
+#### Update Task Status
+```http
+PATCH /tasks/{id}/status
+Content-Type: application/json
+
+{
+  "status": "in_progress"
+}
+```
+
+#### Update Full Task
+```http
+PUT /tasks/{id}
+Content-Type: application/json
+
+{
+  "title": "Updated title",
+  "description": "Updated description",
+  "status": "done",
+  "due_date": "2025-09-07 11:28:00"
+}
+```
+
+#### Delete Task
+```http
+DELETE /tasks/{id}
+```
+
+**Response:** `200 OK`
+
+### Status Values
+- `pending` - Task not started
+- `in_progress` - Task currently being worked on
+- `done` - Task completed
+
+### Validation Rules
+- **title**: Required, max 255 characters
+- **description**: Optional
+- **status**: Optional, must be one of: pending, in_progress, done
+- **due_date**: Optional, must be valid date format
+
+## Database Schema
+
+**Tasks Table**
+
+| Column      | Type                           | Notes                             |
+|------------|--------------------------------|-----------------------------------|
+| id         | bigint unsigned                | Primary key, auto-increment       |
+| title      | varchar(255)                   | Required                          |
+| description| text                           | Optional                          |
+| status     | enum('pending', 'in_progress', 'done') | Default 'pending'                |
+| due_date   | datetime                       | Optional                          |
+| created_at | timestamp                      | Set when the task is created      |
+| updated_at | timestamp                      | Set when the task is updated      |
+
+The status field tracks task progress and Laravel handles the timestamps automatically.
+
+
+## Tech Stack
+
+- **Backend**: Laravel 10.x (PHP)
+- **Frontend**: Blade templates with Bootstrap 5 (CDN)
+- **Database**: MySQL 8.0
+- **Testing**: PHPUnit with Laravel testing utilities
+
+
+
