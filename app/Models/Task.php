@@ -13,6 +13,19 @@ class Task extends Model
         'title',
         'description',
         'status',
-        'due_at',
+        'due_date',
     ];
+
+    protected $casts = [
+        'due_date' => 'datetime',
+    ];
+
+    protected $attributes = [
+        'status' => 'pending',
+    ];
+
+    public static function getStatusOptions(): array
+    {
+        return ['pending', 'in_progress', 'done'];
+    }
 }
