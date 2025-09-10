@@ -42,14 +42,14 @@ class TaskController extends Controller
 
     public function store(Request $request)
     {
-        try {
-            $request->validate([
-                'title' => 'required|max:255',
-                'description' => 'nullable',
-                'status' => 'nullable|in:pending,in_progress,done',
-                'due_date' => 'nullable|date',
-            ]);
+        $request->validate([
+            'title' => 'required|max:255',
+            'description' => 'nullable',
+            'status' => 'nullable|in:pending,in_progress,done',
+            'due_date' => 'nullable|date',
+        ]);
 
+        try {
             $task = Task::create($request->all());
             
             if ($request->wantsJson()) {
